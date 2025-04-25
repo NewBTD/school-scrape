@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bundle Pricing Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2 style="text-align:center">ราคาคอร์ส Bundle ของ borntoDev</h2>
+  <canvas id="bundleChart" width="900" height="500"></canvas>
+
+  <script>
+    fetch("data.json")
+      .then(res => res.json())
+      .then(data => {
+        const labels = data.map(bundle => bundle.title);
+        const prices = data.map(bundle => bundle.price);
+        const categories = data.map(bundle => bundle.category);
+
+        const ctx = document.getElementById("bundleChart").getContext("2d");
+
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [{
+              label: "ราคา (บาท)",
+              data: prices,
+              backgroundColor: "rgba(54, 162, 235, 0.6)",
+              borderColor: "rgba(54, 162, 235, 1)",
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const index = context.dataIndex;
+                    const price = context.dataset.data[index];
+                    const cat = categories[index];
+                    return `ราคา: ${price.toLocaleString()} บาท\nหมวด: ${cat}`;
+                  }
+                }
+              },
+              legend: { display: false }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: value => value.toLocaleString() + ' บาท'
+                }
+              }
+            }
+          }
+        });
+      });
+  </script>
+</body>
+</html>
